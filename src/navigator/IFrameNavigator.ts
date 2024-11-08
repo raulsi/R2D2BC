@@ -1730,6 +1730,8 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
     var even: boolean = (index ?? 0) % 2 === 1;
     this.showLoadingMessageAfterDelay();
 
+    this.currentSpreadLinks = {};
+
     function writeIframeDoc(content: string, href: string) {
       const parser = new DOMParser();
       const doc = parser.parseFromString(content, "application/xhtml+xml");
@@ -1842,6 +1844,7 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
                 }
               } else {
                 this.iframes[1].src = "about:blank";
+                this.currentSpreadLinks.right = undefined;
               }
             }
           } else {
@@ -1872,6 +1875,7 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
               }
             } else {
               this.iframes[0].src = "about:blank";
+              this.currentSpreadLinks.left = undefined;
             }
             if (this.iframes.length === 2 && this.publication.isFixedLayout) {
               this.currentSpreadLinks.right = {
@@ -1978,6 +1982,7 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
                   }
                 } else {
                   this.iframes[1].src = "about:blank";
+                  this.currentSpreadLinks.right = undefined;
                 }
               }
             } else {
@@ -1990,6 +1995,9 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
                     this.currentChapterLink.href
                   );
                 });
+              this.currentSpreadLinks.left = {
+                href: this.currentChapterLink.href,
+              };
               if (this.iframes.length === 2) {
                 if ((index ?? 0) < this.publication.readingOrder.length - 1) {
                   const next = this.publication.getNextSpineItem(
@@ -2009,6 +2017,7 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
                   }
                 } else {
                   this.iframes[1].src = "about:blank";
+                  this.currentSpreadLinks.right = undefined;
                 }
               }
             }
@@ -2026,6 +2035,9 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
                   this.iframes[0].src = href;
                   if (this.iframes.length === 2) {
                     this.iframes[1].src = this.currentChapterLink.href;
+                    this.currentSpreadLinks.right = {
+                      href: this.currentChapterLink.href,
+                    };
                   }
                 } else {
                   fetch(href, this.requestConfig)
@@ -2051,6 +2063,7 @@ export class IFrameNavigator extends EventEmitter implements Navigator {
               }
             } else {
               this.iframes[0].src = "about:blank";
+              this.currentSpreadLinks.left = undefined;
               if (this.iframes.length === 2) {
                 this.currentSpreadLinks.right = {
                   href: this.currentChapterLink.href,
